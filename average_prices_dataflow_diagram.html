@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDT/BOB Price Data Flow</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .phase {
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            position: relative;
+        }
+        
+        .phase-title {
+            background: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            font-size: 14px;
+        }
+        
+        .phase-content {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .step {
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .step-description {
+            font-size: 12px;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #3498db;
+            align-self: center;
+        }
+        
+        .data-source {
+            background: #e8f5e8;
+            border-color: #27ae60;
+        }
+        
+        .processing {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        
+        .storage {
+            background: #e1ecf4;
+            border-color: #007bff;
+        }
+        
+        .api {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .frontend {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+        }
+        
+        .code-snippet {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            margin-top: 8px;
+            color: #495057;
+        }
+        
+        .technical-note {
+            background: #f0f8ff;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 13px;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .frequency {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .phase-content {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .step {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏦 USDT/BOB Price Data Flow - CotizacionesBolivia.com</h1>
+        
+        <div class="technical-note">
+            <strong>📊 Average Pricing System:</strong> This diagram shows how average USDT prices in Bolivianos are calculated and displayed, using real-time data from Binance's P2P marketplace.
+        </div>
+        
+        <div class="flow-diagram">
+            
+            <!-- Phase 1: Data Collection -->
+            <div class="phase">
+                <div class="phase-title">PHASE 1: DATA COLLECTION</div>
+                <div class="phase-content">
+                    <div class="step data-source">
+                        <div class="frequency">Every 15min</div>
+                        <div class="step-title">🌐 Binance P2P API</div>
+                        <div class="step-description">
+                            Official source for BUY/SELL offers
+                            <div class="code-snippet">
+https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search
+Payload: {"fiat": "BOB", "asset": "USDT", "tradeType": "SELL"}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step processing">
+                        <div class="step-title">⚙️ AWS Lambda</div>
+                        <div class="step-description">
+                            Automated serverless processing
+                            <div class="code-snippet">
+fetch_data.py runs every 15 minutes:
+1. Fetch SELL offers (USDT sellers)
+2. Fetch BUY offers (USDT buyers)  
+3. Parse and validate offer data
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step processing">
+                        <div class="step-title">🎯 Median Absolute Deviation Outlier Filter</div>
+                        <div class="step-description">
+                            Adaptive statistical filtering
+                            <div class="code-snippet">
+Dynamic threshold using linear interpolation:
+- Low amount of offers: MAD = 6.0 (lenient)
+- High amount of offers: MAD = 3.0 (strict)
+- Between: interpolated value
+Removes: |price - median| / mad > threshold
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step processing">
+                        <div class="step-title">📊 VWAP Calculation</div>
+                        <div class="step-description">
+                            Volume-Weighted Average Price
+                            <div class="code-snippet">
+VWAP = Σ(price × volume) / Σ(volume)
+- Applied to filtered offers only
+- Sell VWAP: For USDT buyers
+- Buy VWAP: For USDT sellers
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 2: Data Storage -->
+            <div class="phase">
+                <div class="phase-title">PHASE 2: DATA STORAGE</div>
+                <div class="phase-content">
+                    <div class="step storage">
+                        <div class="step-title">🗄️ DynamoDB</div>
+                        <div class="step-description">
+                            AWS NoSQL Database
+                            <div class="code-snippet">
+Table: crypto_exchange_rates
+- ID: 'current' (current rate)
+- ID: 'history_[timestamp]' (historical)
+- sell_vwap, buy_vwap, timestamp
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step storage">
+                        <div class="step-title">📈 Historical Data</div>
+                        <div class="step-description">
+                            Storage for temporal analysis
+                            <div class="code-snippet">
+- Retention: Permanent historical data
+- Queries: By time range
+- Analysis: Hourly/daily variations
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 3: API Layer -->
+            <div class="phase">
+                <div class="phase-title">PHASE 3: API LAYER</div>
+                <div class="phase-content">
+                    <div class="step api">
+                        <div class="step-title">🔗 API Gateway</div>
+                        <div class="step-description">
+                            Public REST endpoints
+                            <div class="code-snippet">
+GET /current - Current rate
+GET /historical - Historical data
+Base URL: z5l1y3luja.execute-api.us-east-2.amazonaws.com/prod
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step api">
+                        <div class="step-title">⚡ Cache TTL</div>
+                        <div class="step-description">
+                            CloudFront caching
+                            <div class="code-snippet">
+TTL: 5 minutes
+- Reduces latency
+- Minimizes AWS costs
+- Improves user experience
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 4: Frontend Display -->
+            <div class="phase">
+                <div class="phase-title">PHASE 4: USER INTERFACE</div>
+                <div class="phase-content">
+                    <div class="step frontend">
+                        <div class="frequency">Every 1min</div>
+                        <div class="step-title">🌐 Website</div>
+                        <div class="step-description">
+                            Frontend JavaScript
+                            <div class="code-snippet">
+script.js:
+- fetch('/current') every minute
+- Updates DOM elements
+- Calculates variations
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">📱 UI Elements</div>
+                        <div class="step-description">
+                            Visual elements in index.html
+                            <div class="code-snippet">
+#buy-exchange-rate → Buy price
+#sell-exchange-rate → Sell price  
+#last-update → Last update timestamp
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">📊 Variation Calculation</div>
+                        <div class="step-description">
+                            Frontend temporal analysis
+                            <div class="code-snippet">
+Hourly variation: vs price 1 hour ago
+Daily variation: vs previous day average
+Indicators: ↑ ↓ = with colors
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 5: User Interaction -->
+            <div class="phase">
+                <div class="phase-title">PHASE 5: USER EXPERIENCE</div>
+                <div class="phase-content">
+                    <div class="step frontend">
+                        <div class="step-title">💰 Displayed Prices</div>
+                        <div class="step-description">
+                            Final information to user
+                            <div class="code-snippet">
+BUY: 13.25 Bs (price to buy USDT)
+SELL: 13.22 Bs (price to sell USDT)
+Last updated: 3 minutes ago
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">🔄 Calculator</div>
+                        <div class="step-description">
+                            Conversion tool
+                            <div class="code-snippet">
+converter.js:
+- Uses current rates for conversion
+- Bs ↔ USDT in real-time
+- Automatic updates
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">📈 Indicators</div>
+                        <div class="step-description">
+                            Trend analysis
+                            <div class="code-snippet">
+Variations:
+- ↑ +0.15% (last hour)
+- ↓ -0.23% (last day)
+- Tooltips with previous prices
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color data-source"></div>
+                <span>Data Source</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color processing"></div>
+                <span>Processing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color storage"></div>
+                <span>Storage</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color api"></div>
+                <span>API Layer</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color frontend"></div>
+                <span>Frontend/UI</span>
+            </div>
+        </div>
+        
+        <div class="technical-note">
+            <strong>🔧 Technical Notes:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li><strong>Adaptive MAD Filtering:</strong> Uses linear interpolation to adjust outlier thresholds based on sample size. Stricter filtering with more offers (3.0), more lenient with fewer offers (6.0).</li>
+                <li><strong>VWAP vs Simple Average:</strong> VWAP gives more weight to offers with higher volume, providing more representative market prices.</li>
+                <li><strong>Sample Size Intelligence:</strong> System automatically adapts to market conditions - during low activity periods, it's less aggressive about removing potentially valid offers.</li>
+                <li><strong>Trade Types:</strong> SELL = users selling USDT (buy price), BUY = users buying USDT (sell price).</li>
+                <li><strong>Frontend Updates:</strong> Every minute to maintain fresh information without overloading the API.</li>
+                <li><strong>Fallback:</strong> If APIs fail, the last known values are maintained until the next successful update.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

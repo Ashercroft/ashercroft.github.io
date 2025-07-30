@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Analysis Dashboard - Data Flow</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 2.3em;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .phase {
+            border: 2px solid #2d3748;
+            border-radius: 12px;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffffff 0%, #f7fafc 100%);
+            position: relative;
+        }
+        
+        .phase-title {
+            background: #2d3748;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            font-size: 14px;
+        }
+        
+        .phase-content {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .step {
+            background: #edf2f7;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .step-description {
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.4;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #2d3748;
+            align-self: center;
+        }
+        
+        .data-source {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+        
+        .processing {
+            background: #fffbeb;
+            border-color: #ed8936;
+        }
+        
+        .visualization {
+            background: #ebf8ff;
+            border-color: #3182ce;
+        }
+        
+        .analysis {
+            background: #faf5ff;
+            border-color: #805ad5;
+        }
+        
+        .algorithm {
+            background: #fff5f5;
+            border-color: #e53e3e;
+        }
+        
+        .insights {
+            background: #f7fafc;
+            border-color: #718096;
+        }
+        
+        .code-snippet {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            margin-top: 8px;
+            color: #2d3748;
+        }
+        
+        .technical-note {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 13px;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .frequency {
+            background: #e53e3e;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        
+        .multi-step {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 280px;
+        }
+        
+        .sub-step {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 11px;
+        }
+        
+        .metric-highlight {
+            background: #2d3748;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            margin: 2px;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .phase-content {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .step {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 P2P Market Analysis Dashboard | Algorithm Development & Data Discovery</h1>
+        
+        <div class="technical-note">
+            <strong>🔬 Research & Development Tool:</strong> This dashboard analyzes real-time P2P market dynamics to understand pricing patterns, liquidity distribution, and develop robust algorithms for the production pricing system.
+        </div>
+        
+        <div class="flow-diagram">
+            
+            <!-- Data Sources -->
+            <div class="phase">
+                <div class="phase-title">DUAL DATA SOURCE ARCHITECTURE</div>
+                <div class="phase-content">
+                    <div class="step data-source">
+                        <div class="frequency">Every 15min</div>
+                        <div class="step-title">🏠 CotizacionesBolivia.com API</div>
+                        <div class="step-description">
+                            Production market metrics
+                            <div class="code-snippet">
+API Endpoints:
+- /current → BUY/SELL VWAP prices
+- /historical → Market price timeline
+- Sobredispersión (outlier %) metrics
+- MAD-filtered, algorithm-validated data
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step data-source">
+                        <div class="frequency">Live API</div>
+                        <div class="step-title">🌐 Binance P2P API</div>
+                        <div class="step-description">
+                            Raw offer data stream
+                            <div class="code-snippet">
+Direct Binance Integration:
+- Individual offer listings
+- Trader information & metrics
+- Tradable quantities
+- Real-time offer updates
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step processing">
+                        <div class="step-title">⚙️ Data Fusion Engine</div>
+                        <div class="step-description">
+                            Multi-source integration
+                            <div class="code-snippet">
+Integration Logic:
+- CotizacionesBolivia API → Price charts & efficiency metrics
+- Binance API → Raw offer analysis
+- Real-time correlation analysis
+- Algorithm vs market comparison
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 1: Market Analysis -->
+            <div class="phase">
+                <div class="phase-title">SECTION 1: MARKET ANALYSIS & ALGORITHM VALIDATION</div>
+                <div class="phase-content">
+                    <div class="step analysis multi-step">
+                        <div class="step-title">💰 Current Price Display</div>
+                        <div class="sub-step">
+                            <span class="metric-highlight">BUY: 13.51</span> <span class="metric-highlight">SELL: 12.19</span>
+                        </div>
+                        <div class="sub-step">
+                            <strong>Price Makers:</strong> Top trader identification
+                        </div>
+                        <div class="sub-step">
+                            <strong>Formadores de precio:</strong> P2P-c0394lgq, romer-friaz
+                        </div>
+                        <div class="sub-step">
+                            <strong>Real-time validation:</strong> Algorithm vs market
+                        </div>
+                    </div>
+                    
+                    <div class="step visualization multi-step">
+                        <div class="step-title">📈 Time Series Analysis</div>
+                        <div class="sub-step">
+                            <strong>Data Source:</strong> CotizacionesBolivia.com API
+                        </div>
+                        <div class="sub-step">
+                            <strong>Price lines:</strong> Buy (green), Sell (yellow), Market (red)
+                        </div>
+                        <div class="sub-step">
+                            <strong>Algorithm validation:</strong> Production vs development
+                        </div>
+                        <div class="sub-step">
+                            <strong>Historical trends:</strong> Multi-day performance tracking
+                        </div>
+                    </div>
+                    
+                    <div class="step analysis multi-step">
+                        <div class="step-title">📊 Sobredispersión Analysis</div>
+                        <div class="sub-step">
+                            <strong>Data Source:</strong> CotizacionesBolivia.com API
+                        </div>
+                        <div class="sub-step">
+                            <span class="metric-highlight">BUY: 14.7%</span> <span class="metric-highlight">SELL: 4.64%</span>
+                        </div>
+                        <div class="sub-step">
+                            <strong>Outlier tracking:</strong> Algorithm efficiency over time
+                        </div>
+                        <div class="sub-step">
+                            <strong>Market health:</strong> Filtering effectiveness metrics
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 2: Raw Market Data Analysis -->
+            <div class="phase">
+                <div class="phase-title">SECTION 2: RAW MARKET DATA ANALYSIS</div>
+                <div class="phase-content">
+                    <div class="step visualization multi-step">
+                        <div class="step-title">🎯 Bid-Ask Liquidity</div>
+                        <div class="sub-step">
+                            <strong>Visual gauge:</strong> Market health indicator
+                        </div>
+                        <div class="sub-step">
+                            <span class="metric-highlight">24.7%</span> Bid-Ask Liquidity
+                        </div>
+                        <div class="sub-step">
+                            <strong>Offers distribution:</strong> <span class="metric-highlight">27.9%</span> Bid-Ask Offers
+                        </div>
+                        <div class="sub-step">
+                            <strong>Algorithm insight:</strong> Liquidity-weighted pricing
+                        </div>
+                    </div>
+                    
+                    <div class="step visualization multi-step">
+                        <div class="step-title">📊 Raw Offer Analysis</div>
+                        <div class="sub-step">
+                            <strong>Data Source:</strong> Binance P2P API
+                        </div>
+                        <div class="sub-step">
+                            <strong>Histograms:</strong> Individual offer distribution
+                        </div>
+                        <div class="sub-step">
+                            <strong>Price clustering:</strong> Market structure analysis
+                        </div>
+                        <div class="sub-step">
+                            <strong>Research insight:</strong> Optimal sampling strategies
+                        </div>
+                    </div>
+                    
+                    <div class="step analysis multi-step">
+                        <div class="step-title">💹 Live Offer Tables</div>
+                        <div class="sub-step">
+                            <strong>Data Source:</strong> Binance P2P API
+                        </div>
+                        <div class="sub-step">
+                            <strong>Individual offers:</strong> Price vs volume analysis
+                        </div>
+                        <div class="sub-step">
+                            <strong>Scatter plots:</strong> Price-volume relationships
+                        </div>
+                        <div class="sub-step">
+                            <strong>Algorithm comparison:</strong> CotizacionesBolivia API vs raw data
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 3: Market Statistics -->
+            <div class="phase">
+                <div class="phase-title">SECTION 3: COMPREHENSIVE MARKET STATISTICS</div>
+                <div class="phase-content">
+                    <div class="step analysis multi-step">
+                        <div class="step-title">📊 Buy Offers Analytics</div>
+                        <div class="sub-step">
+                            <strong>Medians:</strong> Tradable Quantity (698.60), Price (13.59)
+                        </div>
+                        <div class="sub-step">
+                            <strong>Liquidity:</strong> <span class="metric-highlight">2,994,491</span> Total Volume
+                        </div>
+                        <div class="sub-step">
+                            <strong>Statistics:</strong> Price distribution, volume analysis
+                        </div>
+                        <div class="sub-step">
+                            <strong>Research value:</strong> Optimal sampling strategy validation
+                        </div>
+                    </div>
+                    
+                    <div class="step analysis multi-step">
+                        <div class="step-title">📈 Sell Offers Analytics</div>
+                        <div class="sub-step">
+                            <strong>Medians:</strong> Tradable Quantity (718.39), Price (11.80)
+                        </div>
+                        <div class="sub-step">
+                            <strong>Liquidity:</strong> <span class="metric-highlight">969,370</span> Total Volume
+                        </div>
+                        <div class="sub-step">
+                            <strong>Statistics:</strong> Market depth, price clustering
+                        </div>
+                        <div class="sub-step">
+                            <strong>Algorithm insight:</strong> Volume-weighted calculations
+                        </div>
+                    </div>
+                    
+                    <div class="step analysis multi-step">
+                        <div class="step-title">🎯 Market Overview</div>
+                        <div class="sub-step">
+                            <strong>Current offers:</strong> <span class="metric-highlight">Buy: 77</span> <span class="metric-highlight">Sell: 197</span>
+                        </div>
+                        <div class="sub-step">
+                            <strong>Market structure:</strong> Supply/demand imbalance analysis
+                        </div>
+                        <div class="sub-step">
+                            <strong>Statistical validation:</strong> Sample size adequacy
+                        </div>
+                        <div class="sub-step">
+                            <strong>Algorithm tuning:</strong> Market condition adaptation
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Research Outcomes -->
+            <div class="phase">
+                <div class="phase-title">RESEARCH OUTCOMES & PRODUCTION IMPACT</div>
+                <div class="phase-content">
+                    <div class="step algorithm">
+                        <div class="step-title">🧮 Algorithm Research Lab</div>
+                        <div class="step-description">
+                            Evidence-based algorithm selection
+                            <div class="code-snippet">
+Research Findings:
+✓ VWAP over simple average (better volume weighting)
+✓ MAD over Modified Z-score (more robust)
+✓ Dynamic thresholds (market adaptive)
+✓ Top-6 offers strategy (quality vs quantity)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step algorithm">
+                        <div class="step-title">⚙️ Production Implementation</div>
+                        <div class="step-description">
+                            Research → Production pipeline
+                            <div class="code-snippet">
+Implementation:
+- Dashboard findings → Lambda functions
+- Validated algorithms → CotizacionesBolivia API
+- Optimized parameters → Configuration files
+- Performance monitoring → Real-time validation
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step insights">
+                        <div class="step-title">📊 Continuous Validation</div>
+                        <div class="step-description">
+                            Ongoing system monitoring
+                            <div class="code-snippet">
+Validation Loop:
+- Dashboard monitors production performance
+- Sobredispersión tracks filtering effectiveness
+- Algorithm adjustments based on market changes
+- Research feeds back into production improvements
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color data-source"></div>
+                <span>Data Source</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color processing"></div>
+                <span>Data Processing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color visualization"></div>
+                <span>Visualization</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color analysis"></div>
+                <span>Market Analysis</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color algorithm"></div>
+                <span>Algorithm Development</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color insights"></div>
+                <span>Research Insights</span>
+            </div>
+        </div>
+        
+        <div class="technical-note">
+            <strong>🔬 Research & Development Insights:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li><strong>Dual Data Architecture:</strong> Dashboard intelligently combines CotizacionesBolivia.com production API (VWAP prices, sobredispersión tracking) with raw Binance data (individual offers) for comprehensive market analysis.</li>
+                <li><strong>Algorithm Validation:</strong> Real-time comparison between CotizacionesBolivia.com pricing system and raw market data enables continuous algorithm performance monitoring.</li>
+                <li><strong>Liquidity Intelligence:</strong> Real-time bid-ask liquidity tracking (24.7%) and offer distribution analysis enables volume-weighted pricing strategies.</li>
+                <li><strong>Algorithm Validation:</strong> Live comparison between multiple pricing methodologies (VWAP, simple average, different outlier detection) with real market data.</li>
+                <li><strong>Data Quality Research:</strong> Identifies price clustering patterns, trader behavior anomalies, and optimal sampling strategies for production algorithms.</li>
+                <li><strong>Production Pipeline:</strong> Research findings directly inform parameter selection for Lambda-based pricing system used by 1000+ daily users.</li>
+                <li><strong>Market Intelligence:</strong> Continuous monitoring of price formation patterns enables adaptive algorithm tuning based on changing market conditions.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

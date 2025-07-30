@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Data Flow - grafico.html</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .phase {
+            border: 2px solid #8e44ad;
+            border-radius: 12px;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            position: relative;
+        }
+        
+        .phase-title {
+            background: #8e44ad;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            font-size: 14px;
+        }
+        
+        .phase-content {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .step {
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .step-description {
+            font-size: 12px;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #8e44ad;
+            align-self: center;
+        }
+        
+        .data-source {
+            background: #e8f5e8;
+            border-color: #27ae60;
+        }
+        
+        .processing {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        
+        .chart-lib {
+            background: #e1ecf4;
+            border-color: #007bff;
+        }
+        
+        .indicators {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .frontend {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+        }
+        
+        .user-interaction {
+            background: #e7e3ff;
+            border-color: #8e44ad;
+        }
+        
+        .code-snippet {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            margin-top: 8px;
+            color: #495057;
+        }
+        
+        .technical-note {
+            background: #f0f8ff;
+            border-left: 4px solid #8e44ad;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 13px;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .frequency {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        
+        .multi-step {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 250px;
+        }
+        
+        .sub-step {
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 11px;
+        }
+        
+        @media (max-width: 768px) {
+            .phase-content {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .step {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Chart Data Flow - grafico.html | TradingView-Style Technical Analysis</h1>
+        
+        <div class="technical-note">
+            <strong>📊 Advanced Charting System:</strong> This diagram shows how market price data is transformed into professional-grade candlestick charts with multiple technical indicators using TradingView's Lightweight Charts library.
+        </div>
+        
+        <div class="flow-diagram">
+            
+            <!-- Phase 1: Data Collection -->
+            <div class="phase">
+                <div class="phase-title">PHASE 1: TWO-STAGE DATA PIPELINE</div>
+                <div class="phase-content">
+                    <div class="step data-source">
+                        <div class="frequency">Every 5min</div>
+                        <div class="step-title">⚙️ Lambda Price Collector</div>
+                        <div class="step-description">
+                            Advanced market data processing
+                            <div class="code-snippet">
+market_price_collector.py:
+- Fetches top BUY/SELL offers from Binance
+- Modified Z-score outlier detection
+- Simple average of filtered offers
+- Handles time gaps and missing data
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step data-source">
+                        <div class="step-title">🗄️ DynamoDB Storage</div>
+                        <div class="step-description">
+                            Raw price data repository
+                            <div class="code-snippet">
+Table: crypto_market_prices
+- Individual price data points
+- Timestamp-indexed records
+- Source for candle building
+- Analytics and backup
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step processing">
+                        <div class="frequency">Triggered</div>
+                        <div class="step-title">📊 Lambda Candle Builder</div>
+                        <div class="step-description">
+                            OHLC candle construction
+                            <div class="code-snippet">
+candle_builder.py:
+- Reads price data from DynamoDB
+- Aggregates into OHLC candles
+- Multiple timeframes (15m, 1h, 4h, etc.)
+- Builds complete candle dataset
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step data-source">
+                        <div class="step-title">☁️ S3 JSON Storage</div>
+                        <div class="step-description">
+                            Chart-ready data file
+                            <div class="code-snippet">
+s3://bucket/market_price_data.json
+{
+  "data_point": { "price": 13.25, "timestamp_epoch": ... },
+  "candles": {
+    "15m": [...], "30m": [...], "1h": [...],
+    "4h": [...], "12h": [...], "1d": [...], "1w": [...]
+  }
+}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step processing">
+                        <div class="step-title">⚙️ Data Loader Module</div>
+                        <div class="step-description">
+                            JavaScript S3 file reader
+                            <div class="code-snippet">
+data-loader.js:
+- fetch('s3-url/market_price_data.json')
+- formatCandleData() transforms to chart format
+- getCurrentPrice() extracts latest price
+- setTimeframe() switches intervals
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 2: Chart Initialization -->
+            <div class="phase">
+                <div class="phase-title">PHASE 2: CHART LIBRARY SETUP</div>
+                <div class="phase-content">
+                    <div class="step chart-lib">
+                        <div class="step-title">📊 TradingView Lightweight Charts</div>
+                        <div class="step-description">
+                            Professional charting library
+                            <div class="code-snippet">
+chart-init.js:
+- LightweightCharts.createChart()
+- 3 synchronized charts: Main, RSI, MACD
+- Dark theme with Bolivia timezone
+- Candlestick series configuration
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step chart-lib">
+                        <div class="step-title">🎯 Chart Synchronization</div>
+                        <div class="step-description">
+                            Multi-chart coordination
+                            <div class="code-snippet">
+chart-sync.js:
+- Crosshair synchronization
+- Time scale alignment
+- Viewport coordination
+- Disabled sub-chart interaction
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step chart-lib">
+                        <div class="step-title">⚙️ Chart Configuration</div>
+                        <div class="step-description">
+                            Professional styling
+                            <div class="code-snippet">
+Dark theme, Bolivia timezone
+Optimized bar spacing
+Grid lines, crosshairs
+Price scale formatting
+Localized time labels
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 3: Technical Indicators -->
+            <div class="phase">
+                <div class="phase-title">PHASE 3: TECHNICAL INDICATORS CALCULATION</div>
+                <div class="phase-content">
+                    <div class="step indicators multi-step">
+                        <div class="step-title">📈 EMA Indicators</div>
+                        <div class="sub-step">
+                            <strong>ema.js:</strong> Exponential Moving Averages
+                        </div>
+                        <div class="sub-step">
+                            <strong>Periods:</strong> 20, 50, 200
+                        </div>
+                        <div class="sub-step">
+                            <strong>Formula:</strong> EMA = (price - prevEMA) × multiplier + prevEMA
+                        </div>
+                        <div class="sub-step">
+                            <strong>Null filtering:</strong> Clean data for display
+                        </div>
+                    </div>
+                    
+                    <div class="step indicators multi-step">
+                        <div class="step-title">📊 Bollinger Bands</div>
+                        <div class="sub-step">
+                            <strong>bollinger.js:</strong> Statistical bands
+                        </div>
+                        <div class="sub-step">
+                            <strong>Components:</strong> Upper, Middle (SMA), Lower
+                        </div>
+                        <div class="sub-step">
+                            <strong>Calculation:</strong> SMA ± (2 × Standard Deviation)
+                        </div>
+                        <div class="sub-step">
+                            <strong>Period:</strong> 20 (default)
+                        </div>
+                    </div>
+                    
+                    <div class="step indicators multi-step">
+                        <div class="step-title">⚡ RSI Oscillator</div>
+                        <div class="sub-step">
+                            <strong>rsi.js:</strong> Relative Strength Index
+                        </div>
+                        <div class="sub-step">
+                            <strong>Formula:</strong> 100 - (100 / (1 + RS))
+                        </div>
+                        <div class="sub-step">
+                            <strong>Reference lines:</strong> 30 (oversold), 70 (overbought)
+                        </div>
+                        <div class="sub-step">
+                            <strong>Period:</strong> 14 (Wilder's smoothing)
+                        </div>
+                    </div>
+                    
+                    <div class="step indicators multi-step">
+                        <div class="step-title">🔄 MACD Signal</div>
+                        <div class="sub-step">
+                            <strong>macd.js:</strong> Moving Average Convergence Divergence
+                        </div>
+                        <div class="sub-step">
+                            <strong>Components:</strong> MACD Line, Signal, Histogram
+                        </div>
+                        <div class="sub-step">
+                            <strong>Parameters:</strong> Fast(12), Slow(26), Signal(9)
+                        </div>
+                        <div class="sub-step">
+                            <strong>Colors:</strong> Green/Red histogram
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 4: User Interface Controls -->
+            <div class="phase">
+                <div class="phase-title">PHASE 4: INTERACTIVE CONTROLS</div>
+                <div class="phase-content">
+                    <div class="step user-interaction">
+                        <div class="step-title">⏱️ Timeframe Selection</div>
+                        <div class="step-description">
+                            Multi-timeframe analysis
+                            <div class="code-snippet">
+timeframe-handler.js:
+Buttons: 30m, 1h, 4h, 12h, 1d, 1w, 1M
+- setTimeframe() switches data
+- Updates all charts and indicators
+- Maintains chart synchronization
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step user-interaction">
+                        <div class="step-title">🎛️ Indicator Toggles</div>
+                        <div class="step-description">
+                            Dynamic indicator control
+                            <div class="code-snippet">
+Toggle switches:
+- EMA (20, 50, 200)
+- Bollinger Bands
+- RSI/MACD view modes
+Real-time calculation and display
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step user-interaction">
+                        <div class="step-title">👁️ Chart View Modes</div>
+                        <div class="step-description">
+                            Flexible indicator display
+                            <div class="code-snippet">
+View options:
+- Both: RSI + MACD
+- RSI Only
+- MACD Only
+Dynamic container show/hide
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 5: Real-time Updates -->
+            <div class="phase">
+                <div class="phase-title">PHASE 5: LIVE DATA INTEGRATION</div>
+                <div class="phase-content">
+                    <div class="step frontend">
+                        <div class="frequency">Every 10min</div>
+                        <div class="step-title">🔄 Auto-refresh System</div>
+                        <div class="step-description">
+                            Background S3 file updates
+                            <div class="code-snippet">
+data-loader.js setupAutoRefresh():
+- Fetches latest JSON from S3
+- Updates current price display
+- Refreshes active indicators  
+- Maintains user's timeframe selection
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">💰 Price Display</div>
+                        <div class="step-description">
+                            Current price integration
+                            <div class="code-snippet">
+Header elements:
+#current-price → Latest USDT/BOB rate
+#last-update → Data freshness timestamp
+Price direction indicators (falling/rising)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">📊 Dynamic Legends</div>
+                        <div class="step-description">
+                            Live indicator values
+                            <div class="code-snippet">
+updateLegends():
+- Current price, EMA values
+- RSI level, MACD signals
+- Bollinger band levels
+- Color-coded indicators
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 6: User Experience -->
+            <div class="phase">
+                <div class="phase-title">PHASE 6: PROFESSIONAL TRADING INTERFACE</div>
+                <div class="phase-content">
+                    <div class="step frontend">
+                        <div class="step-title">🎨 Dark Theme UI</div>
+                        <div class="step-description">
+                            Professional appearance
+                            <div class="code-snippet">
+chart-styles.css:
+- Dark background (#2e3a46)
+- Teal/Gold color scheme
+- Professional grid lines
+- Mobile responsive design
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">📱 Responsive Design</div>
+                        <div class="step-description">
+                            Mobile optimization
+                            <div class="code-snippet">
+Mobile adaptations:
+- Stacked chart controls
+- Touch-friendly timeframe buttons
+- Responsive chart containers
+- Optimized for small screens
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <div class="step frontend">
+                        <div class="step-title">⚡ Performance</div>
+                        <div class="step-description">
+                            Optimized rendering
+                            <div class="code-snippet">
+Performance features:
+- Chart synchronization
+- Optimized bar spacing
+- Efficient indicator updates
+- Smooth zoom/pan interactions
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color data-source"></div>
+                <span>Data Source</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color processing"></div>
+                <span>Data Processing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color chart-lib"></div>
+                <span>Chart Library</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color indicators"></div>
+                <span>Technical Indicators</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color user-interaction"></div>
+                <span>User Controls</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color frontend"></div>
+                <span>Frontend/UI</span>
+            </div>
+        </div>
+        
+        <div class="technical-note">
+            <strong>🔧 Technical Architecture:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li><strong>Advanced Filtering:</strong> Market price collector uses Modified Z-score outlier detection on top offers per side, ensuring data quality before candle building.</li>
+                <li><strong>Two-Stage Lambda Pipeline:</strong> Sophisticated data processing with filtered price collection → DynamoDB storage → candle building → S3 deployment for optimized chart performance.</li>
+                <li><strong>TradingView Integration:</strong> Professional-grade charting library with candlestick visualization and synchronized multi-chart display.</li>
+                <li><strong>Technical Indicators:</strong> Full implementation of EMA, Bollinger Bands, RSI, and MACD with proper mathematical formulas and null value handling.</li>
+                <li><strong>Chart Synchronization:</strong> Custom-built system to coordinate timeframe, crosshair, and viewport across multiple chart instances.</li>
+                <li><strong>Real-time Updates:</strong> Background refresh system that maintains user state while updating chart data and current price displays.</li>
+                <li><strong>Responsive Design:</strong> Mobile-optimized interface with touch-friendly controls and adaptive layout for different screen sizes.</li>
+                <li><strong>Performance Optimization:</strong> Efficient data transformation, optimized rendering, and smooth user interactions for professional trading experience.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
